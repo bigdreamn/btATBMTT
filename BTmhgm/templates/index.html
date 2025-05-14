@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mã hóa/Giải mã File và Hình ảnh</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0; /* Reset default body margin */
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            width: 400px;
+            max-width: 90%; /* Responsive width */
+            box-sizing: border-box; /* Include padding in width */
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="file"], input[type="text"], select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px 0; /* Reduced vertical margin */
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box; /* Ensure padding doesn't affect width */
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px; /* Add margin above the button */
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .note {
+            font-size: 13px;
+            color: gray;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        #image-preview {
+            margin-top: 20px;
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: none; /* Hidden by default */
+        }
+
+        .processed-image-container {
+            margin-top: 20px;
+            text-align: center;
+            display: none; /* Hidden by default */
+        }
+
+        .processed-image-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .processed-image-container a{
+            display: block;
+            margin-top: 10px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+        .processed-image-container a:hover{
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            h2 {
+                font-size: 20px;
+            }
+            .note{
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Mã hóa/Giải mã File và Hình ảnh</h2>
+        <form method="POST" action="/" enctype="multipart/form-data">
+            <label>Chọn file:</label>
+            <input type="file" name="file" id="fileInput" required>
+
+            <label>Chọn khóa (8 ký tự cho DES, 16/24/32 ký tự cho AES):</label>
+            <input type="text" name="key" required>
+
+            <label>Chọn thuật toán:</label>
+            <select name="cipher_type">
+                <option value="des">DES</option>
+                <option value="aes">AES</option>
+            </select>
+
+            <label>Chọn hành động:</label>
+            <select name="action">
+                <option value="encrypt">Mã hóa</option>
+                <option value="decrypt">Giải mã</option>
+            </select>
+
+            <button type="submit">Thực hiện</button>
+        </form>
+        <p class="note">* Khóa phải đúng 8 ký tự cho DES hoặc 16/24/32 ký tự cho AES.</p>
+        <img id="image-preview" src="#" alt="Preview">
+        <div class="processed-image-container">
+            <img id="processed-image-display" src="#" alt="Processed Image">
+            <a id="download-link" href="#">Download</a>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const imagePreview = document.getElementById('image-preview');
+        const processedImageContainer = document.querySelector('.processed-image-container');
+        const processedImageDisplay = document.getElementById('processed-image-display');
+        const downloadLink = document.getElementById('download-link');
+
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp'];
+
+            if (file && validImageTypes.includes(file.type)) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    processedImageContainer.style.display = 'none'; // Hide previous result
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.src = '#';
+                imagePreview.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
